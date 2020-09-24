@@ -4,6 +4,9 @@ class Game():
     def __init__(self):
         self.grid = [[random.randint(1,5) for y in range(0,10)] for x in range(0,10)]
         self.anim = [[0 for y in range(0,10)] for x in range(0,10)]
+        self.scorre = 0
+        self.done = False
+        self.movesleft = 10
         print(self.grid)
 
     def build_grid(self):
@@ -27,12 +30,16 @@ class Game():
 
 
     def swap_tiles(self, x1, y1, x2, y2):
+        self.movesleft -=1
+        if self.movesleft == 0:
+            self.done = True
         #Sørg for, at vi kun kan bytte naboceller.
         if abs(x1-x2) <= 1 and abs(y1-y2) <= 1:
             self.grid[x1][y1], self.grid[x2][y2] = self.grid[x2][y2], self.grid[x1][y1]
 
 
     def detect_matches(self, auto = False):
+        points = 0
         for x in range(1, len(self.grid)-1):
             for y in range(0, len(self.grid)):
                 #Detect horizontal match
@@ -46,9 +53,22 @@ class Game():
                     while x1 < len(self.grid) and self.grid[x1][y] == c:
                         self.grid[x1][y] = 0
                         x1 += 1
+                    self.scorre += 1
                     #Hvis vi har fjernet brikker, skal pladen fyldes igen
                     self.build_grid()
         for y in range(1, len(self.grid)-1):
             for x in range(0, len(self.grid)):
                 #Detect vertical match
-                pass
+                    if self.grid[x][y] == self.grid[x][y-1] and self.grid[x][y] == self.grid[x][y+1]:
+                        c = self.grid[x][y]
+
+                        self.grid[x][y-1] = 0
+                        self.grid[x][y] = 0
+                        self.grid[x][y+1] = 0
+                        y1 = y+2
+                        while y1 < len(self.grid) and self.grid[x][y1] == c:
+                            self.grid[x][y1] = 0
+                            y1 += 1
+                        self.scorre += 1
+                        #Hvis vi har fjernet brikker, skal pladen fyldes igen
+                        self.build_grid()

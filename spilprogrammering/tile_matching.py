@@ -8,9 +8,10 @@ myfont = pygame.font.SysFont("monospace", 12)
 clock = pygame.time.Clock()
 
 # Initialize game variables
-done = False
 game = Game()
 current_tile = (3,3)
+
+scorre = 0
 
 # tile vars
 tile_colors = [(0,0,0), (255,0,0), (0,255,0), (0,0,255), (255,255,0), (0,255,255)]
@@ -19,7 +20,10 @@ tile_size = [50,50]
 
 
 def draw_game():
+
     pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
+    screen.blit(myfont.render("Du har {} point".format(game.scorre), 0, (255,255,255)), (50,50))
+    screen.blit(myfont.render("Du har {} træk tilbage".format(game.movesleft), 0, (255,255,255)), (50,70))
     if current_tile is not None:
         t = abs((pygame.time.get_ticks() % 512) - 256) % 256
         c = (t,t,t)
@@ -46,15 +50,21 @@ def output_logic(tilstand):
     if tilstand == 1:
         draw_game()
     elif tilstand == 0:
-        draw_menu()
+        pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
+        #pygame kommandoer til at vise grafikken og opdatere 60 gange i sekundet.
+        pygame.display.flip()
+        clock.tick(60)
 
 def draw_menu():
     pass
 
 tilstand = 1
-
+start = 0
 #Main game loop
-while not done:
+while not game.done:
+    if start == 0:
+        scorre += game.detect_matches()
+        start = 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             done = True
@@ -83,8 +93,10 @@ while not done:
                         game.detect_matches()
                         current_tile = None
 
-    output_logic(tilstand)
 
+    pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
+
+    output_logic(tilstand)
     #pygame kommandoer til at vise grafikken og opdatere 60 gange i sekundet.
     pygame.display.flip()
     clock.tick(60)
