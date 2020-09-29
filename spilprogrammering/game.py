@@ -1,4 +1,6 @@
 import random
+import pygame
+
 
 class Game():
     def __init__(self):
@@ -6,9 +8,13 @@ class Game():
         self.anim = [[0 for y in range(0,10)] for x in range(0,10)]
         self.scorre = 0
         self.done = False
-        self.movesleft = 10
-        print(self.grid)
+        self.movesleft = 100
+        self.background_music = pygame.mixer.Sound('y2mate.com - Wii Music - Gaming Background Music (HD)_x2NzoLMWAwQ (online-audio-converter.com).wav')
+        self.point_sound = pygame.mixer.Sound('zapsplat_multimedia_game_sound_digital_high_pitched_generic_tone_001_55831 (online-audio-converter.com).wav')
+        # self.point_sound = pygame.mixer.Sound('sound_spark_Glitch_Factory_01_Decimated_01 (online-audio-converter.com).wav')
+        self.End_sound = pygame.mixer.Sound('human_audience_laughter_comedy_club_x200_people_komedia_brighton_comic_boom_011 (online-audio-converter.com).wav')
 
+        print(self.grid)
     def build_grid(self):
         #import pdb; pdb.set_trace()
         for x in range(0, len(self.grid)):
@@ -55,6 +61,7 @@ class Game():
                         x1 += 1
                     self.scorre += 1
                     #Hvis vi har fjernet brikker, skal pladen fyldes igen
+                    self.point_sound.play(1)
                     self.build_grid()
         for y in range(1, len(self.grid)-1):
             for x in range(0, len(self.grid)):
@@ -71,4 +78,43 @@ class Game():
                             y1 += 1
                         self.scorre += 1
                         #Hvis vi har fjernet brikker, skal pladen fyldes igen
+                        self.point_sound.play(1)
+                        self.build_grid()
+        for y in range(1, len(self.grid)-1):
+            for x in range(0, len(self.grid)-1):
+                #Detect vertical match
+                    if self.grid[x][y] == self.grid[x-1][y-1] and self.grid[x][y] == self.grid[x+1][y+1]:
+                        c = self.grid[x][y]
+
+                        self.grid[x-1][y-1] = 0
+                        self.grid[x][y] = 0
+                        self.grid[x+1][y+1] = 0
+                        y1 = y+2
+                        x1 = x+2
+                        while y1 < len(self.grid) and x1 < len(self.grid) and self.grid[x1][y1] == c:
+                            self.grid[x1][y1] = 0
+                            y1 += 1
+                            x1 += 1
+                        self.scorre += 1
+                        #Hvis vi har fjernet brikker, skal pladen fyldes igen
+                        self.point_sound.play(1)
+                        self.build_grid()
+        for y in range(1, len(self.grid)-1):
+            for x in range(0, len(self.grid)-1):
+                #Detect vertical match
+                    if self.grid[x][y] == self.grid[x+1][y-1] and self.grid[x][y] == self.grid[x-1][y+1]:
+                        c = self.grid[x][y]
+
+                        self.grid[x+1][y-1] = 0
+                        self.grid[x][y] = 0
+                        self.grid[x-1][y+1] = 0
+                        y1 = y+2
+                        x1 = x+2
+                        while y1 < len(self.grid) and x1 < len(self.grid) and self.grid[x1][y1] == c:
+                            self.grid[x1][y1] = 0
+                            y1 += 1
+                            x1 += 1
+                        self.scorre += 1
+                        #Hvis vi har fjernet brikker, skal pladen fyldes igen
+                        self.point_sound.play(1)
                         self.build_grid()

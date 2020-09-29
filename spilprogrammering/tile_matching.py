@@ -6,10 +6,11 @@ pygame.init()
 screen = pygame.display.set_mode((800, 600))#, pygame.FULLSCREEN)
 myfont = pygame.font.SysFont("monospace", 12)
 clock = pygame.time.Clock()
+pygame.mixer.init()
 
 # Initialize game variables
 game = Game()
-current_tile = (3,3)
+current_tile = (-1,-1)
 
 scorre = 0
 
@@ -18,9 +19,8 @@ tile_colors = [(0,0,0), (255,0,0), (0,255,0), (0,0,255), (255,255,0), (0,255,255
 tile_offset = [280,530]
 tile_size = [50,50]
 
-
+game.background_music.play()
 def draw_game():
-
     pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
     screen.blit(myfont.render("Du har {} point".format(game.scorre), 0, (255,255,255)), (50,50))
     screen.blit(myfont.render("Du har {} træk tilbage".format(game.movesleft), 0, (255,255,255)), (50,70))
@@ -52,6 +52,7 @@ def output_logic(tilstand):
     elif tilstand == 0:
         pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
         #pygame kommandoer til at vise grafikken og opdatere 60 gange i sekundet.
+        game.End_sound.play()
         pygame.display.flip()
         clock.tick(60)
 
@@ -63,7 +64,7 @@ start = 0
 #Main game loop
 while not game.done:
     if start == 0:
-        scorre += game.detect_matches()
+        game.detect_matches()
         start = 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
