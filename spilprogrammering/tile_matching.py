@@ -1,6 +1,7 @@
 import pygame
 from game import Game
 
+
 # Setup pygame
 pygame.init()
 screen = pygame.display.set_mode((800, 600))#, pygame.FULLSCREEN)
@@ -15,12 +16,43 @@ current_tile = (-1,-1)
 scorre = 0
 
 # tile vars
-tile_colors = [(0,0,0), (255,0,0), (0,255,0), (0,0,255), (255,255,0), (0,255,255)]
+tile_colors = [(0,0,0), (255,0,0), (0,255,0), (0,0,255), (255,255,0), (0,255,255), (0,0,0)]
 tile_offset = [280,530]
 tile_size = [50,50]
 
+# Sprites
+class Orb_sprite():
+    def __init__(self):
+        self.sprite_images = []
+        self.frames = 6
+        image = pygame.image.load('orbs_small.png')
+        image = image.convert_alpha()
+        spriteWidth = image.get_width() // self.frames
+        spriteHeight = image.get_height()
+        x = 0
+        for i in range(self.frames):
+            frameSurf = pygame.Surface((spriteWidth, spriteHeight), pygame.SRCALPHA, 32)
+            frameSurf.blit(image, (x, 0))
+            self.sprite_images.append(frameSurf.copy())
+            x -= spriteWidth
+        self.anim_count = 0
+        self.anim_frame = 0
+
+    def update(self):
+        self.anim_count += 1
+        if self.anim_count >= 6:
+            self.anim_count = 0
+            self.anim_frame = (self.anim_frame + 1) % self.frames
+
+    def get_current_image(self):
+        return self.sprite_images[self.anim_frame]
+
+orb_sprite = Orb_sprite()
+
 game.background_music.play()
 def draw_game():
+    orb_sprite.update()
+
     pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
     screen.blit(myfont.render("Du har {} point".format(game.scorre), 0, (255,255,255)), (50,50))
     screen.blit(myfont.render("Du har {} træk tilbage".format(game.movesleft), 0, (255,255,255)), (50,70))
@@ -34,7 +66,12 @@ def draw_game():
                 game.anim[x][y] -= 1
                 if game.anim[x][y] == 0:
                     game.detect_matches(True)
-            pygame.draw.rect(screen, tile_colors[game.grid[x][y]], pygame.Rect(tile_offset[0] + x*tile_size[0], tile_offset[1] - (y+1)*tile_size[1] - game.anim[x][y], tile_size[0]-5, tile_size[1]-5))
+            # if game.grid[x][y] == 1:
+            #     screen.blit(mario, [tile_offset[0] + x*tile_size[0], tile_offset[1] - (y+1)*tile_size[1] - game.anim[x][y]])
+            if game.grid[x][y] == 6:
+                screen.blit(orb_sprite.get_current_image(), [tile_offset[0] + x*tile_size[0] + 7, tile_offset[1] - (y+1)*tile_size[1] - game.anim[x][y] + 7])
+            else:
+                pygame.draw.rect(screen, tile_colors[game.grid[x][y]], pygame.Rect(tile_offset[0] + x*tile_size[0], tile_offset[1] - (y+1)*tile_size[1] - game.anim[x][y], tile_size[0]-5, tile_size[1]-5))
 
 def pixels_to_cell(x,y):
     x1 = int((x - tile_offset[0])/tile_size[0])
@@ -95,7 +132,6 @@ while not game.done:
                         current_tile = None
 
 
-    pygame.draw.rect(screen, (0,0,0), pygame.Rect(0,0,800,600))
 
     output_logic(tilstand)
     #pygame kommandoer til at vise grafikken og opdatere 60 gange i sekundet.

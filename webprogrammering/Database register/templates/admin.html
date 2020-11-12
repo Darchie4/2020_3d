@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Eksempel 1</title>
+  </head>
+  <body>
+    <h1>En overskrift</h1>
+    {% for user in users %}
+    <p>Bruger id = {{ user[0] }}, navn = {{ user[1] }}, Email = {{ user[2] }}</p>
+    {% endfor %}
+  </body>
+</html>
